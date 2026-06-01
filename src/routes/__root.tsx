@@ -11,6 +11,9 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { ThemeProvider } from "@/hooks/useTheme";
+import { Navbar } from "@/components/Navbar";
+import { useSensors } from "@/hooks/useSensors";
 
 function NotFoundComponent() {
   return (
@@ -101,8 +104,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('theme')||'dark';var h=document.documentElement;h.classList.remove('light','dark');h.classList.add(t);}catch(e){}})();`,
+          }}
+        />
         <HeadContent />
       </head>
       <body>
@@ -118,8 +126,28 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <ThemeProvider>
+        <AppShell />
+      </ThemeProvider>
     </QueryClientProvider>
+  );
+}
+
+function AppShell() {
+  const { refresh, lastUpdated, isRefreshing } = useSensors({
+    autoRefresh: true,
+    refreshInterval: 300000,
+  });
+
+  return (
+    <div className="min-h-screen bg-background text-foreground">
+      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 h-80 w-80 rounded-full bg-blue-500/10 blur-3xl" />
+        <div className="absolute top-1/2 -left-40 h-80 w-80 rounded-full bg-cyan-500/10 blur-3xl" />
+        <div className="absolute -bottom-40 right-1/3 h-80 w-80 rounded-full bg-teal-500/10 blur-3xl" />
+      </div>
+      <Navbar onRefresh={refresh} lastUpdated={lastUpdated} isRefreshing={isRefreshing} />
+      <Outlet />
+    </div>
   );
 }
