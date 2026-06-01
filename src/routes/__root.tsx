@@ -90,13 +90,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:site", content: "@Lovable" },
       { name: "twitter:title", content: "Lovable App" },
       { name: "twitter:description", content: "Alert Hub & Theme Sync provides a centralized notification system and synchronizes dark/light mode across your application." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/35f7cee5-969c-4a3d-b832-2b1bb01cd2a7/id-preview-de880b9b--ee372532-e194-4c3b-9b10-84f630c7b1f9.lovable.app-1780311321405.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/35f7cee5-969c-4a3d-b832-2b1bb01cd2a7/id-preview-de880b9b--ee372532-e194-4c3b-9b10-84f630c7b1f9.lovable.app-1780311321405.png" },
     ],
     links: [
       {
         rel: "stylesheet",
         href: appCss,
+      },
+      {
+        rel: "stylesheet",
+        href: "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css",
+        integrity: "sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=",
+        crossOrigin: "",
       },
     ],
   }),
