@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { PollutionAnalyticsCharts } from "./PollutionAnalyticsCharts.client";
+import { PollutionAnalyticsCharts } from "./PollutionAnalyticsCharts";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { AirQualityReading } from "@/types/air-quality";
 import { BarChart3 } from "lucide-react";
