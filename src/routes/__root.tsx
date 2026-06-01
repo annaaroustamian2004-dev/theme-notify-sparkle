@@ -104,8 +104,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('theme')||'dark';var h=document.documentElement;h.classList.remove('light','dark');h.classList.add(t);}catch(e){}})();`,
+          }}
+        />
         <HeadContent />
       </head>
       <body>
