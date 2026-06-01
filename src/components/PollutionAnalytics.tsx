@@ -1,19 +1,9 @@
 import { useState } from "react";
-import { ClientOnly } from "@tanstack/react-router";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { PollutionAnalyticsCharts } from "./PollutionAnalyticsCharts";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { AirQualityReading } from "@/types/air-quality";
 import { BarChart3 } from "lucide-react";
-
-const ChartFallback = () => <Skeleton className="h-[280px] w-full bg-white/5" />;
-const LazyCharts = (props: { history: AirQualityReading[]; activeTab: string }) => (
-  <ClientOnly fallback={<ChartFallback />}>
-    {() => {
-      const { PollutionAnalyticsCharts } = require("./PollutionAnalyticsCharts.client");
-      return <PollutionAnalyticsCharts {...props} />;
-    }}
-  </ClientOnly>
-);
 
 interface PollutionAnalyticsProps {
   history: AirQualityReading[];
@@ -64,13 +54,13 @@ export function PollutionAnalytics({ history, loading }: PollutionAnalyticsProps
           ) : (
             <>
               <TabsContent value="aqi" className="mt-0">
-                <LazyCharts history={history} activeTab="aqi" />
+                <PollutionAnalyticsCharts history={history} activeTab="aqi" />
               </TabsContent>
               <TabsContent value="pm25" className="mt-0">
-                <LazyCharts history={history} activeTab="pm25" />
+                <PollutionAnalyticsCharts history={history} activeTab="pm25" />
               </TabsContent>
               <TabsContent value="compare" className="mt-0">
-                <LazyCharts history={history} activeTab="compare" />
+                <PollutionAnalyticsCharts history={history} activeTab="compare" />
               </TabsContent>
             </>
           )}
