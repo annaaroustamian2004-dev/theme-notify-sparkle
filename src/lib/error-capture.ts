@@ -11,3 +11,15 @@ export function createErrorMessage(error: unknown): string {
   }
   return 'An unexpected error occurred';
 }
+
+let lastCapturedError: unknown = undefined;
+
+export function setLastCapturedError(error: unknown): void {
+  lastCapturedError = error;
+}
+
+export function consumeLastCapturedError(): unknown {
+  const e = lastCapturedError;
+  lastCapturedError = undefined;
+  return e;
+}
