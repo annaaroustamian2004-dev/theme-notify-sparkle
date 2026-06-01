@@ -12,31 +12,26 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<Theme>('dark');
-  const [mounted, setMounted] = useState(false);
 
-  // Initialize theme from localStorage on mount
+  // Initialize theme from localStorage on mount (client only)
   useEffect(() => {
-    const stored = localStorage.getItem('theme') as Theme | null;
-    const initialTheme = stored || 'dark';
-    setThemeState(initialTheme);
-    applyTheme(initialTheme);
-    setMounted(true);
+    if (typeof window === 'undefined') return;
+    const stored = (localStorage.getItem('theme') as Theme | null) ?? 'dark';
+    setThemeState(stored);
+    applyTheme(stored);
   }, []);
 
   // Apply theme to DOM
   const applyTheme = (newTheme: Theme) => {
+    if (typeof document === 'undefined') return;
     const html = document.documentElement;
-
-    // Remove both classes
     html.classList.remove('light', 'dark');
-
-    // Add the new theme class
     html.classList.add(newTheme);
-
-    // Save to localStorage
-    localStorage.setItem('theme', newTheme);
-
-    console.log('Applied theme:', newTheme);
+    try {
+      localStorage.setItem('theme', newTheme);
+    } catch {
+      /* ignore */
+    }
   };
 
   const toggleTheme = () => {
@@ -49,10 +44,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     setThemeState(newTheme);
     applyTheme(newTheme);
   };
-
-  if (!mounted) {
-    return <>{children}</>;
-  }
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>
