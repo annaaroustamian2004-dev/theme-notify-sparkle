@@ -14,6 +14,8 @@ export function PremiumSensorMap({ sensors, center, onSensorSelect, selectedSens
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<unknown>(null);
   const markersRef = useRef<unknown[]>([]);
+  const tileLayerRef = useRef<import("leaflet").TileLayer | null>(null);
+  const leafletRef = useRef<typeof import("leaflet") | null>(null);
 
   useEffect(() => {
     if (!mapRef.current || mapInstanceRef.current) return;
@@ -24,6 +26,7 @@ export function PremiumSensorMap({ sensors, center, onSensorSelect, selectedSens
     const initMap = async () => {
       try {
         L = (await import("leaflet")).default;
+        leafletRef.current = L;
 
         // Fix default icon
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -42,9 +45,12 @@ export function PremiumSensorMap({ sensors, center, onSensorSelect, selectedSens
 
         mapInstanceRef.current = map;
 
-        // Dark theme tile layer
-        L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        const isDark = document.documentElement.classList.contains("dark");
+        const tileUrl = isDark
+          ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+          : "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png";
+        tileLayerRef.current = L.tileLayer(tileUrl, {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
           subdomains: "abcd",
           maxZoom: 19,
         }).addTo(map);
@@ -129,6 +135,29 @@ export function PremiumSensorMap({ sensors, center, onSensorSelect, selectedSens
       }
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // React to theme changes by swapping the tile layer
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      const L = leafletRef.current;
+      const map = mapInstanceRef.current as import("leaflet").Map | null;
+      if (!L || !map) return;
+      const isDark = document.documentElement.classList.contains("dark");
+      const url = isDark
+        ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+        : "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png";
+      if (tileLayerRef.current) {
+        map.removeLayer(tileLayerRef.current);
+      }
+      tileLayerRef.current = L.tileLayer(url, {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: "abcd",
+        maxZoom: 19,
+      }).addTo(map);
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
